@@ -455,57 +455,49 @@ function validateEmail(email) {
     var re = /\S+@\S+\.\S+/;
     return re.test(email);
 }
-function sendEmail() {
-
-    "use strict";
-
-    var name     = $('#name').val();
-    var email    = $('#email').val();
-    var subject  = $('#subject').val();
-    var comments = $('#comments').val();
-
-    if(!name){
-        $('#message').toast('show').addClass('bg-danger').removeClass('bg-success');
-        $('.toast-body').html('Name is  required');
-    } else if(!email){
-        $('#message').toast('show').addClass('bg-danger').removeClass('bg-success');
-        $('.toast-body').html('Email is  required');
-    } else if(!validateEmail(email)){
-        $('#message').toast('show').addClass('bg-danger').removeClass('bg-success');
-        $('.toast-body').html('Email is not valid');
-    } else if(!subject){
-        $('#message').toast('show').addClass('bg-danger').removeClass('bg-success');
-        $('.toast-body').html('Subject is  required');
-    }else if(!comments){
-        $('#message').toast('show').addClass('bg-danger').removeClass('bg-success');
-        $('.toast-body').html('Comments is  required');
-    }else {
-        $.ajax({
-            type: 'POST',
-            data: $("#contactForm").serialize(),
-            url:  "sendEmail.php",
-            beforeSend: function() {
-                $('#submit-btn').html('<span class="spinner-border spinner-border-sm"></span> Loading..');
-            },
-            success: function(data) {
-                $('#submit-btn').html('Submit');
-                var myObj = JSON.parse(data);
-                if(myObj['status']=='Congratulation'){
-                    $('#message').toast('show').addClass('bg-success').removeClass('bg-danger bg-warning');
-                    $('.toast-body').html('<strong>'+ myObj['status'] +' : </strong> '+ myObj['message']);
-                }else if(myObj['status']=='Error'){
-                    $('#message').toast('show').addClass('bg-danger').removeClass('bg-success bg-warning');
-                    $('.toast-body').html('<strong>'+ myObj['status'] +' : </strong> '+ myObj['message']);
-                }else if(myObj['status']=='Warning'){
-                    $('#message').toast('show').addClass('bg-warning').removeClass('bg-success bg-danger');
-                    $('.toast-body').html('<strong>'+ myObj['status'] +' : </strong> '+ myObj['message']);
-                }
-            },
-            error: function(xhr) {
-                $('#submit-btn').html('Submit');
-                $('#message').toast('show').addClass('bg-danger').removeClass('bg-success bg-warning');
-                $('.toast-body').html('<strong> Error : </strong> Something went wrong, Please try again.');
-            },
-        });
+window.addEventListener("DOMContentLoaded", function () {
+    // get the form elements defined in your form HTML above
+  
+    var form = document.getElementById("contactForm");
+    // var button = document.getElementById("my-form-button");
+    var status = document.getElementById("status");
+  
+    // Success and Error functions for after the form is submitted
+  
+    function success() {
+      form.reset();
+      status.classList.add("success");
+      status.innerHTML = "Thanks!";
     }
-}
+  
+    function error() {
+      status.classList.add("error");
+      status.innerHTML = "Oops! There was a problem.";
+    }
+  
+    // handle the form submission event
+  
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var data = new FormData(form);
+      ajax(form.method, form.action, data, success, error);
+    });
+  });
+  
+  // helper function for sending an AJAX request
+  
+  function ajax(method, url, data, success, error) {
+    var xhr = new XMLHttpRequest();
+    xhr.open(method, url);
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState !== XMLHttpRequest.DONE) return;
+      if (xhr.status === 200) {
+        success(xhr.response, xhr.responseType);
+      } else {
+        error(xhr.status, xhr.response, xhr.responseType);
+      }
+    };
+    xhr.send(data);
+  }
+  
