@@ -1274,6 +1274,17 @@ canvas.particles-js-canvas-el {
   .about .personal-info span {
     display: block;
   }
+
+  .language{
+    display: flex;
+    justify-content: space-evenly;
+  }
+  .lang{
+    font-size: medium;
+  }
+  .exp{
+    font-size: small;
+  }
   .language-bar .list-inline-item:not(:last-child) {
     margin-right: .25rem;
   }
